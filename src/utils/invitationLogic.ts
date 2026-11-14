@@ -9,9 +9,15 @@ export interface CountdownState {
   isEventDay: boolean;
 }
 
-// Sábado, 12 de Diciembre de 2026 — 10:00 AM (Hora de Venezuela, UTC-4)
+// Sábado, 12 de Diciembre de 2026 — 10:00 AM a 3:00 PM (Hora de Venezuela, UTC-4)
 export const WEDDING_TARGET_ISO = '2026-12-12T10:00:00-04:00';
+export const WEDDING_END_ISO = '2026-12-12T15:00:00-04:00';
 export const WEDDING_TARGET_MS = new Date(WEDDING_TARGET_ISO).getTime();
+
+export const WEDDING_EVENT_TITLE = 'Boda Civil de Dayneb & Alejandro';
+export const WEDDING_EVENT_LOCATION = 'Braseiro Steak House, Maracaibo, Zulia, Venezuela';
+export const WEDDING_EVENT_DESCRIPTION =
+  'Ceremonia civil y almuerzo de celebración de Dayneb & Alejandro.';
 
 export const GOOGLE_MAPS_URL =
   'https://www.google.com/maps/search/?api=1&query=Braseiro+Steak+House+Maracaibo+Zulia+Venezuela';
@@ -223,4 +229,78 @@ export function createCelebrationParticles(
   }
 
   return particles;
+}
+
+function toUtcCalendarStamp(isoDate: string): string {
+  return new Date(isoDate)
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}Z$/, 'Z');
+}
+
+export function buildGoogleCalendarUrl(): string {
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: WEDDING_EVENT_TITLE,
+    dates: `${toUtcCalendarStamp(WEDDING_TARGET_ISO)}/${toUtcCalendarStamp(WEDDING_END_ISO)}`,
+    location: WEDDING_EVENT_LOCATION,
+    details: `${WEDDING_EVENT_DESCRIPTION}\nUbicación: ${GOOGLE_MAPS_URL}`,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+export function buildIcsContent(): string {
+  const dtStart = toUtcCalendarStamp(WEDDING_TARGET_ISO);
+  const dtEnd = toUtcCalendarStamp(WEDDING_END_ISO);
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Dayneb & Alejandro//Boda Civil//ES',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    'UID:boda-dayneb-alejandro-20261212@dya',
+    `DTSTAMP:${dtStart}`,
+    `DTSTART:${dtStart}`,
+    `DTEND:${dtEnd}`,
+    `SUMMARY:${WEDDING_EVENT_TITLE}`,
+    `DESCRIPTION:${WEDDING_EVENT_DESCRIPTION}\\nUbicación: ${GOOGLE_MAPS_URL}`,
+    `LOCATION:${WEDDING_EVENT_LOCATION}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+}
+
+export function downloadWeddingIcs(): void {
+  const blob = new Blob([buildIcsContent()], {
+    type: 'text/calendar;charset=utf-8',
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'boda-dayneb-alejandro.ics';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+export type CalendarPlatform = 'ios' | 'android' | 'other';
+
+export function detectCalendarPlatform(
+  userAgent: string = typeof navigator !== 'undefined' ? navigator.userAgent : '',
+  maxTouchPoints: number = typeof navigator !== 'undefined'
+    ? navigator.maxTouchPoints ?? 0
+    : 0,
+): CalendarPlatform {
+  if (/iPad|iPhone|iPod/i.test(userAgent)) {
+    return 'ios';
+  }
+  if (userAgent.includes('Macintosh') && maxTouchPoints > 1) {
+    return 'ios';
+  }
+  if (/Android/i.test(userAgent)) {
+    return 'android';
+  }
+  return 'other';
 }

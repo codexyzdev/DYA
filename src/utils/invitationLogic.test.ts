@@ -16,6 +16,9 @@ import {
   getNoButtonDodgeOffset,
   createCelebrationParticles,
   extractYouTubeVideoId,
+  buildGoogleCalendarUrl,
+  buildIcsContent,
+  detectCalendarPlatform,
 } from './invitationLogic';
 
 test('calculateCountdown computes days, hours, minutes, seconds accurately before event', () => {
@@ -114,4 +117,40 @@ test('extractYouTubeVideoId extracts video ID from youtu.be and youtube.com URLs
     'rtOvBOTyX00',
   );
   assert.equal(extractYouTubeVideoId('invalid-url'), null);
+});
+
+test('buildGoogleCalendarUrl builds valid Google Calendar template link', () => {
+  const url = new URL(buildGoogleCalendarUrl());
+  assert.equal(url.origin + url.pathname, 'https://calendar.google.com/calendar/render');
+  assert.equal(url.searchParams.get('action'), 'TEMPLATE');
+  assert.equal(url.searchParams.get('dates'), '20261212T140000Z/20261212T190000Z');
+  assert.ok(url.searchParams.get('text')?.includes('Dayneb & Alejandro'));
+});
+
+test('buildIcsContent generates valid RFC 5545 VCALENDAR content', () => {
+  const ics = buildIcsContent();
+  assert.ok(ics.includes('BEGIN:VCALENDAR'));
+  assert.ok(ics.includes('DTSTART:20261212T140000Z'));
+  assert.ok(ics.includes('DTEND:20261212T190000Z'));
+  assert.ok(ics.includes('SUMMARY:Boda Civil de Dayneb & Alejandro'));
+  assert.ok(ics.includes('END:VCALENDAR'));
+});
+
+test('detectCalendarPlatform identifies iOS, Android, and desktop', () => {
+  assert.equal(
+    detectCalendarPlatform('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)', 5),
+    'ios',
+  );
+  assert.equal(
+    detectCalendarPlatform('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 5),
+    'ios',
+  );
+  assert.equal(
+    detectCalendarPlatform('Mozilla/5.0 (Linux; Android 14; Pixel 8)', 5),
+    'android',
+  );
+  assert.equal(
+    detectCalendarPlatform('Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 0),
+    'other',
+  );
 });

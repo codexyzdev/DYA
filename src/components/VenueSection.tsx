@@ -1,8 +1,16 @@
-import React from 'react';
-import { MapPin, ExternalLink } from 'lucide-react';
-import { GOOGLE_MAPS_URL } from '../utils/invitationLogic';
+import React, { useMemo } from 'react';
+import { MapPin, ExternalLink, CalendarPlus, Download } from 'lucide-react';
+import {
+  GOOGLE_MAPS_URL,
+  buildGoogleCalendarUrl,
+  detectCalendarPlatform,
+  downloadWeddingIcs,
+} from '../utils/invitationLogic';
 
 export const VenueSection: React.FC = () => {
+  const calendarPlatform = useMemo(() => detectCalendarPlatform(), []);
+  const showGoogleCalendar = calendarPlatform === 'android' || calendarPlatform === 'other';
+  const showIcsCalendar = calendarPlatform === 'ios' || calendarPlatform === 'other';
   return (
     <section
       aria-labelledby="venue-heading"
@@ -31,7 +39,7 @@ export const VenueSection: React.FC = () => {
         </p>
       </div>
 
-      <div className="mt-6 flex justify-center">
+      <div className="mt-6 flex flex-col items-center gap-3">
         <a
           href={GOOGLE_MAPS_URL}
           target="_blank"
@@ -42,6 +50,39 @@ export const VenueSection: React.FC = () => {
           <span>Ver Ubicación en Google Maps</span>
           <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-75" aria-hidden="true" />
         </a>
+
+        <div className="flex w-full sm:w-auto flex-col sm:flex-row items-center justify-center gap-2">
+          {showGoogleCalendar && (
+            <a
+              href={buildGoogleCalendarUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-[#C5A059]/60 bg-[#FDFBF7]/90 px-4 py-2.5 text-center font-sans text-[11px] font-semibold uppercase tracking-[0.08em] text-[#7A3528] transition-all duration-200 hover:border-[#B3583E] hover:bg-[#F4EFEA] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A3528] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F4EFEA]"
+            >
+              <CalendarPlus className="h-4 w-4 shrink-0 text-[#B3583E]" aria-hidden="true" />
+              <span>
+                {calendarPlatform === 'android'
+                  ? 'Agregar a Google Calendar'
+                  : 'Google Calendar'}
+              </span>
+            </a>
+          )}
+
+          {showIcsCalendar && (
+            <button
+              type="button"
+              onClick={downloadWeddingIcs}
+              className="inline-flex min-h-[44px] w-full sm:w-auto cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#C5A059]/60 bg-[#FDFBF7]/90 px-4 py-2.5 text-center font-sans text-[11px] font-semibold uppercase tracking-[0.08em] text-[#7A3528] transition-all duration-200 hover:border-[#B3583E] hover:bg-[#F4EFEA] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A3528] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F4EFEA]"
+            >
+              <Download className="h-4 w-4 shrink-0 text-[#B3583E]" aria-hidden="true" />
+              <span>
+                {calendarPlatform === 'ios'
+                  ? 'Agregar a Apple Calendar'
+                  : 'Apple / Outlook (.ics)'}
+              </span>
+            </button>
+          )}
+        </div>
       </div>
     </section>
   );
