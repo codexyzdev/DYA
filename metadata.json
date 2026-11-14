@@ -1,0 +1,6 @@
+{
+  "name": "Dayneb & Alejandro — Boda Civil",
+  "description": "Invitación interactiva para la boda civil de Dayneb & Alejandro. Sábado, 12 de Diciembre de 2026 en Braseiro Steak House, Maracaibo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
