@@ -59,7 +59,7 @@ export const EnvelopeIntro: React.FC<EnvelopeIntroProps> = ({
     }
 
     if (phase === 'crossfade') {
-      const t = window.setTimeout(() => onOpenComplete(), 920);
+      const t = window.setTimeout(() => onOpenComplete(), 650);
       return () => window.clearTimeout(t);
     }
   }, [phase, onStartReveal, onOpenComplete]);
@@ -74,7 +74,7 @@ export const EnvelopeIntro: React.FC<EnvelopeIntroProps> = ({
     <section
       aria-label="Sobre de invitación de boda"
       data-testid="envelope-intro"
-      className={`fixed inset-0 z-50 flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-[#F4EFEA] paper-grain px-5 py-8 transition-all duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      className={`fixed inset-0 z-50 flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-[#F4EFEA] paper-grain px-5 py-8 transition-all duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
         isCrossfading
           ? 'opacity-0 scale-[0.985] pointer-events-none'
           : 'opacity-100 scale-100'

@@ -32,7 +32,7 @@ export const AmbientMotionLayer: React.FC = () => {
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
     >
       {/* Subtle warm radial glow behind the stationery */}
-      <div className="animate-aura-breathe absolute left-1/2 top-1/3 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(197,160,89,0.09)_0%,rgba(179,88,62,0.04)_45%,transparent_72%)] blur-2xl" />
+      <div className="animate-aura-breathe absolute left-1/2 top-1/3 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(197,160,89,0.09)_0%,rgba(179,88,62,0.04)_45%,transparent_72%)]" />
 
       {/* Outer backdrop swaying olive & eucalyptus framing branches (desktop & tablet margins) */}
       <svg
